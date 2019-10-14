@@ -36,6 +36,7 @@ class wikiCrawller:
 		"""
 		current_url = self.WIKI_PREFIX + starting_point
 		visited = [starting_point]
+		not_visited = []
 		parent_url = ""
 		counter = 0
 
@@ -59,7 +60,7 @@ class wikiCrawller:
 			title = soup.find("h1").get_text()
 			# --
 			cleared_links = clear_links(all_links)
-			not_visited = difference(cleared_links, visited)
+			not_visited.extend(difference(cleared_links, visited))
 
 			paragraphs = main.find_all("p")
 			for p in paragraphs:
@@ -73,7 +74,7 @@ class wikiCrawller:
 					num_of_words += 1
 
 			# put parent into the database
-			self.c.execute(("INSERT INTO wikipages (title, url, numOfConnections, numOfUniqueWords, numOfWords, words, parent) VALUES ('%s', '%s', %s, %s, %s, '%s', '%s')" % (title, starting_point, len(cleared_links), num_of_unique_words, num_of_words, ','.join(words), parent_url)))
+			self.c.execute(("INSERT INTO wikipages (title, url, numOfConnections, numOfUniqueWords, numOfWords, words, parent) VALUES ('%s', '%s', %s, %s, %s, '%s', '%s')" % (title, current_url, len(cleared_links), num_of_unique_words, num_of_words, ','.join(words), parent_url)))
 			if title.lower() == 'Bo Leuf'.lower():
 				break
 
